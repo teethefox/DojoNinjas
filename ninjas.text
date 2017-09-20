@@ -1,0 +1,114 @@
+(djangoEnv) Tiffanipack:Ninjas tiffanipack$ python manage.py makemigrations
+Migrations for 'Ninjas_app':
+  apps/Ninjas_app/migrations/0005_auto_20170920_2154.py:
+    - Alter field dojo on ninja
+(djangoEnv) Tiffanipack:Ninjas tiffanipack$ python manage.py migrate
+Operations to perform:
+  Apply all migrations: Ninjas_app, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying Ninjas_app.0005_auto_20170920_2154... OK
+(djangoEnv) Tiffanipack:Ninjas tiffanipack$ python manage.py shell
+Python 2.7.10 (default, Feb  7 2017, 00:08:15) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.5.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from apps.Ninjas_app.models import *
+
+In [2]: Ninja.objects.all()
+Out[2]: <QuerySet []>
+
+In [3]: Ninja.objects.create(first_name="Bill", last_name="Bill
+  File "<ipython-input-3-e5494e08b00a>", line 1
+    Ninja.objects.create(first_name="Bill", last_name="Bill
+                                                          ^
+SyntaxError: EOL while scanning string literal
+
+
+In [4]: Ninja.objects.create(first_name="Bill", last_name="Bill", dojo_id="2")
+Out[4]: <Ninja: Ninja object>
+
+In [5]: Ninja.objects.create(first_name="Bilerthjyl", last_name="EFRBill", dojo_
+   ...: id="2")
+Out[5]: <Ninja: Ninja object>
+
+In [6]: Ninja.objects.create(first_name="Bilerl", last_name="EFRBilDFERGTHl", do
+   ...: jo_id="2")
+Out[6]: <Ninja: Ninja object>
+
+In [7]: Ninja.objects.create(first_name="Bill", last_name="Bill", dojo_id="1")
+Out[7]: <Ninja: Ninja object>
+
+In [8]: Ninja.objects.create(first_name="Bilerl", last_name="EFRBilDFERGTHl", do
+   ...: jo_id="1")
+Out[8]: <Ninja: Ninja object>
+
+In [9]: Ninja.objects.create(first_name="Bilerl", last_name="EFRBilDFERGTHl", do
+   ...: jo_id="1")
+Out[9]: <Ninja: Ninja object>
+
+In [10]: Ninja.objects.create(first_name="Bilerl", last_name="EFRBilDFERGTHl", d
+    ...: ojo_id="3")
+Out[10]: <Ninja: Ninja object>
+
+In [11]: Ninja.objects.create(first_name="Bill", last_name="Bill", dojo_id="3")
+Out[11]: <Ninja: Ninja object>
+
+In [12]: Ninja.objects.create(first_name="Bilerl", last_name="EFRBilDFERGTHl", d
+    ...: ojo_id="3")
+Out[12]: <Ninja: Ninja object>
+
+In [13]: Ninja.objects.all()
+Out[13]: <QuerySet [<Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>]>
+
+In [14]: Ninja.objects.all(id="3')
+  File "<ipython-input-14-822423d5c31a>", line 1
+    Ninja.objects.all(id="3')
+                            ^
+SyntaxError: EOL while scanning string literal
+
+
+In [15]: Ninja.objects.all(id="3")
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-15-72c101007352> in <module>()
+----> 1 Ninja.objects.all(id="3")
+
+TypeError: all() got an unexpected keyword argument 'id'
+
+In [16]: Ninja.objects.get(id="3")
+Out[16]: <Ninja: Ninja object>
+
+In [17]: Ninja.objects.get(dojo_id="3")
+---------------------------------------------------------------------------
+MultipleObjectsReturned                   Traceback (most recent call last)
+<ipython-input-17-5a096e00c1e5> in <module>()
+----> 1 Ninja.objects.get(dojo_id="3")
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    387         raise self.model.MultipleObjectsReturned(
+    388             "get() returned more than one %s -- it returned %s!" %
+--> 389             (self.model._meta.object_name, num)
+    390         )
+    391 
+
+MultipleObjectsReturned: get() returned more than one Ninja -- it returned 3!
+
+In [18]: Ninja.objects.filter(dojo_id="3")
+Out[18]: <QuerySet [<Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>]>
+
+In [19]: Ninja.objects.filter(dojo_id="1")
+Out[19]: <QuerySet [<Ninja: Ninja object>, <Ninja: Ninja object>, <Ninja: Ninja object>]>
+
+In [20]: 
