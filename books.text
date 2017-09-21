@@ -1,0 +1,1615 @@
+ [15]: a=Author.objects.get(id=1)
+
+In [16]: b=Book.objects.get(id=1)
+
+In [17]: a.books.add(b)
+
+In [18]: a.save()
+
+In [19]: a=Author.objects.get(id=1)
+
+In [20]: b=Book.objects.get(id=2)
+
+In [21]: a.books.add(b)
+
+In [22]: a.save()
+
+In [23]: a=Author.objects.get(id=2)
+
+In [24]: b=Book.objects.filter(id__lt=4)
+
+In [25]: a.books.add(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-25-4da3f4d43236> in <module>()
+----> 1 a.books.add(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in add(self, *objs)
+    879             db = router.db_for_write(self.through, instance=self.instance)
+    880             with transaction.atomic(using=db, savepoint=False):
+--> 881                 self._add_items(self.source_field_name, self.target_field_name, *objs)
+    882 
+    883                 # If this is a symmetrical m2m relation to self, add the mirror entry in the m2m table
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in _add_items(self, source_field_name, target_field_name, *objs)
+   1026                         .filter(**{
+   1027                             source_field_name: self.related_val[0],
+-> 1028                             '%s__in' % target_field_name: new_ids,
+   1029                         }))
+   1030                 new_ids = new_ids - set(vals)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1181             else:
+   1182                 lhs = MultiColSource(alias, targets, sources, field)
+-> 1183             condition = lookup_class(lhs, value)
+   1184             lookup_type = lookup_class.lookup_name
+   1185         else:
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/lookups.pyc in __init__(self, lhs, rhs)
+     17     def __init__(self, lhs, rhs):
+     18         self.lhs, self.rhs = lhs, rhs
+---> 19         self.rhs = self.get_prep_lookup()
+     20         if hasattr(self.lhs, 'get_bilateral_transforms'):
+     21             bilateral_transforms = self.lhs.get_bilateral_transforms()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_lookups.pyc in get_prep_lookup(self)
+     54                 # only one as we don't get to the direct value branch otherwise.
+     55                 target_field = self.lhs.output_field.get_path_info()[-1].target_fields[-1]
+---> 56                 self.rhs = [target_field.get_prep_value(v) for v in self.rhs]
+     57         return super(RelatedIn, self).get_prep_lookup()
+     58 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/__init__.pyc in get_prep_value(self, value)
+    944         if value is None:
+    945             return None
+--> 946         return int(value)
+    947 
+    948     def contribute_to_class(self, cls, name, **kwargs):
+
+TypeError: int() argument must be a string or a number, not 'QuerySet'
+
+In [26]: a=Author.objects.get(id=2)
+
+In [27]: b=Book.objects.filter(id=1,2,3)
+  File "<ipython-input-27-fc9af612cba7>", line 1
+    b=Book.objects.filter(id=1,2,3)
+SyntaxError: non-keyword arg after keyword arg
+
+
+In [28]: b=Book.objects.filter(id=1,id=2,id=3)
+  File "<ipython-input-28-69daba049c89>", line 1
+    b=Book.objects.filter(id=1,id=2,id=3)
+SyntaxError: keyword argument repeated
+
+
+In [29]: a=Author.objects.get(id=2)
+
+In [30]: b=Book.objects.filter(id=1)
+
+In [31]: a.books.add(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-31-4da3f4d43236> in <module>()
+----> 1 a.books.add(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in add(self, *objs)
+    879             db = router.db_for_write(self.through, instance=self.instance)
+    880             with transaction.atomic(using=db, savepoint=False):
+--> 881                 self._add_items(self.source_field_name, self.target_field_name, *objs)
+    882 
+    883                 # If this is a symmetrical m2m relation to self, add the mirror entry in the m2m table
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in _add_items(self, source_field_name, target_field_name, *objs)
+   1026                         .filter(**{
+   1027                             source_field_name: self.related_val[0],
+-> 1028                             '%s__in' % target_field_name: new_ids,
+   1029                         }))
+   1030                 new_ids = new_ids - set(vals)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1181             else:
+   1182                 lhs = MultiColSource(alias, targets, sources, field)
+-> 1183             condition = lookup_class(lhs, value)
+   1184             lookup_type = lookup_class.lookup_name
+   1185         else:
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/lookups.pyc in __init__(self, lhs, rhs)
+     17     def __init__(self, lhs, rhs):
+     18         self.lhs, self.rhs = lhs, rhs
+---> 19         self.rhs = self.get_prep_lookup()
+     20         if hasattr(self.lhs, 'get_bilateral_transforms'):
+     21             bilateral_transforms = self.lhs.get_bilateral_transforms()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_lookups.pyc in get_prep_lookup(self)
+     54                 # only one as we don't get to the direct value branch otherwise.
+     55                 target_field = self.lhs.output_field.get_path_info()[-1].target_fields[-1]
+---> 56                 self.rhs = [target_field.get_prep_value(v) for v in self.rhs]
+     57         return super(RelatedIn, self).get_prep_lookup()
+     58 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/__init__.pyc in get_prep_value(self, value)
+    944         if value is None:
+    945             return None
+--> 946         return int(value)
+    947 
+    948     def contribute_to_class(self, cls, name, **kwargs):
+
+TypeError: int() argument must be a string or a number, not 'QuerySet'
+
+In [32]: a=Author.objects.get(id=2)
+
+In [33]: b=Book.objects.get(id=1,id=2,id=3)
+  File "<ipython-input-33-d881aa95ae25>", line 1
+    b=Book.objects.get(id=1,id=2,id=3)
+SyntaxError: keyword argument repeated
+
+
+In [34]: b=Book.objects.get(id=1,2,3)
+  File "<ipython-input-34-fa35ecc9b496>", line 1
+    b=Book.objects.get(id=1,2,3)
+SyntaxError: non-keyword arg after keyword arg
+
+
+In [35]: b=Book.objects.get(id__lt=4)
+---------------------------------------------------------------------------
+MultipleObjectsReturned                   Traceback (most recent call last)
+<ipython-input-35-efa59035b7a8> in <module>()
+----> 1 b=Book.objects.get(id__lt=4)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    387         raise self.model.MultipleObjectsReturned(
+    388             "get() returned more than one %s -- it returned %s!" %
+--> 389             (self.model._meta.object_name, num)
+    390         )
+    391 
+
+MultipleObjectsReturned: get() returned more than one Book -- it returned 3!
+
+In [36]: a.books.add(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-36-4da3f4d43236> in <module>()
+----> 1 a.books.add(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in add(self, *objs)
+    879             db = router.db_for_write(self.through, instance=self.instance)
+    880             with transaction.atomic(using=db, savepoint=False):
+--> 881                 self._add_items(self.source_field_name, self.target_field_name, *objs)
+    882 
+    883                 # If this is a symmetrical m2m relation to self, add the mirror entry in the m2m table
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in _add_items(self, source_field_name, target_field_name, *objs)
+   1026                         .filter(**{
+   1027                             source_field_name: self.related_val[0],
+-> 1028                             '%s__in' % target_field_name: new_ids,
+   1029                         }))
+   1030                 new_ids = new_ids - set(vals)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1181             else:
+   1182                 lhs = MultiColSource(alias, targets, sources, field)
+-> 1183             condition = lookup_class(lhs, value)
+   1184             lookup_type = lookup_class.lookup_name
+   1185         else:
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/lookups.pyc in __init__(self, lhs, rhs)
+     17     def __init__(self, lhs, rhs):
+     18         self.lhs, self.rhs = lhs, rhs
+---> 19         self.rhs = self.get_prep_lookup()
+     20         if hasattr(self.lhs, 'get_bilateral_transforms'):
+     21             bilateral_transforms = self.lhs.get_bilateral_transforms()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_lookups.pyc in get_prep_lookup(self)
+     54                 # only one as we don't get to the direct value branch otherwise.
+     55                 target_field = self.lhs.output_field.get_path_info()[-1].target_fields[-1]
+---> 56                 self.rhs = [target_field.get_prep_value(v) for v in self.rhs]
+     57         return super(RelatedIn, self).get_prep_lookup()
+     58 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/__init__.pyc in get_prep_value(self, value)
+    944         if value is None:
+    945             return None
+--> 946         return int(value)
+    947 
+    948     def contribute_to_class(self, cls, name, **kwargs):
+
+TypeError: int() argument must be a string or a number, not 'QuerySet'
+
+In [37]: a=Author.objects.get(id=2)
+
+In [38]: b=Book.objects.get(id=1)
+
+In [39]: a.books.add(b)
+
+In [40]: a.save()
+
+In [41]: a=Author.objects.get(id=2)
+
+In [42]: b=Book.objects.get(id=2)
+
+In [43]: a.books.add(b)
+
+In [44]: a.save()
+
+In [45]: a=Author.objects.get(id=2)
+
+In [46]: b=Book.objects.get(id=3)
+
+In [47]: a.books.add(b)
+
+In [48]: a.save()
+
+In [49]: a=Author.objects.get(id=3)
+
+In [50]: b=Book.objects.get(id=1)
+
+In [51]: a.books.add(b)
+
+In [52]: a.save()
+
+In [53]: a=Author.objects.get(id=3)
+
+In [54]: b=Book.objects.get(id=2)
+
+In [55]: a.books.add(b)
+
+In [56]: a.save()
+
+In [57]: a=Author.objects.get(id=3)
+
+In [58]: b=Book.objects.get(id=3)
+
+In [59]: a.books.add(b)
+
+In [60]: a.save()
+
+In [61]: a=Author.objects.get(id=3)
+
+In [62]: b=Book.objects.get(id=4)
+
+In [63]: a.books.add(b)
+
+In [64]: a.save()
+
+In [65]: a=Author.objects.get(id=4)
+
+In [66]: b=Book.objects.get.all()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-66-ee4f32cb2ef6> in <module>()
+----> 1 b=Book.objects.get.all()
+
+AttributeError: 'function' object has no attribute 'all'
+
+In [67]: b=Book.objects.all()
+
+In [68]: a.books.add(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-68-4da3f4d43236> in <module>()
+----> 1 a.books.add(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in add(self, *objs)
+    879             db = router.db_for_write(self.through, instance=self.instance)
+    880             with transaction.atomic(using=db, savepoint=False):
+--> 881                 self._add_items(self.source_field_name, self.target_field_name, *objs)
+    882 
+    883                 # If this is a symmetrical m2m relation to self, add the mirror entry in the m2m table
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in _add_items(self, source_field_name, target_field_name, *objs)
+   1026                         .filter(**{
+   1027                             source_field_name: self.related_val[0],
+-> 1028                             '%s__in' % target_field_name: new_ids,
+   1029                         }))
+   1030                 new_ids = new_ids - set(vals)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1181             else:
+   1182                 lhs = MultiColSource(alias, targets, sources, field)
+-> 1183             condition = lookup_class(lhs, value)
+   1184             lookup_type = lookup_class.lookup_name
+   1185         else:
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/lookups.pyc in __init__(self, lhs, rhs)
+     17     def __init__(self, lhs, rhs):
+     18         self.lhs, self.rhs = lhs, rhs
+---> 19         self.rhs = self.get_prep_lookup()
+     20         if hasattr(self.lhs, 'get_bilateral_transforms'):
+     21             bilateral_transforms = self.lhs.get_bilateral_transforms()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_lookups.pyc in get_prep_lookup(self)
+     54                 # only one as we don't get to the direct value branch otherwise.
+     55                 target_field = self.lhs.output_field.get_path_info()[-1].target_fields[-1]
+---> 56                 self.rhs = [target_field.get_prep_value(v) for v in self.rhs]
+     57         return super(RelatedIn, self).get_prep_lookup()
+     58 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/__init__.pyc in get_prep_value(self, value)
+    944         if value is None:
+    945             return None
+--> 946         return int(value)
+    947 
+    948     def contribute_to_class(self, cls, name, **kwargs):
+
+TypeError: int() argument must be a string or a number, not 'QuerySet'
+
+In [69]: a=Author.objects.get(id=4)
+
+In [70]: b=Book.objects.get(id=1).get(id=2)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-70-d6468e1ae5db> in <module>()
+----> 1 b=Book.objects.get(id=1).get(id=2)
+
+AttributeError: 'Book' object has no attribute 'get'
+
+In [71]: a=Author.objects.get(id=4)
+
+In [72]: b=Book.objects.get(id=1)
+
+In [73]: a.books.add(b)
+
+In [74]: a.save()
+
+In [75]: a=Author.objects.get(id=4)
+
+In [76]: b=Book.objects.get(id=2)
+
+In [77]: a.books.add(b)
+
+In [78]: a.save()
+
+In [79]: a=Author.objects.get(id=4)
+
+In [80]: b=Book.objects.get(id=3)
+
+In [81]: a.books.add(b)
+
+In [82]: a.save()
+
+In [83]: a=Author.objects.get(id=4)
+
+In [84]: b=Book.objects.get(id=4)
+
+In [85]: a.books.add(b)
+
+In [86]: a.save()
+
+In [87]: a=Author.objects.get(id=4)
+
+In [88]: b=Book.objects.get(id=4)
+
+In [89]: a.books.add(b)
+
+In [90]: c=Book.objects.get(id=5)
+
+In [91]: a.books.add(c)
+
+In [92]: a.save()
+
+In [93]: Book.objects.filter(id=5)
+Out[93]: <QuerySet [<Book: Book object>]>
+
+In [94]: Author.objects.books
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-94-2a2e627650a5> in <module>()
+----> 1 Author.objects.books
+
+AttributeError: 'Manager' object has no attribute 'books'
+
+In [95]: Author.objects.get(id=1).books
+Out[95]: <django.db.models.fields.related_descriptors.ManyRelatedManager at 0x112030690>
+
+In [96]: Author.objects.get(id=1).books.get(id)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-96-b9645c7f020d> in <module>()
+----> 1 Author.objects.get(id=1).books.get(id)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'builtin_function_or_method' object is not iterable
+
+In [97]: Author.objects.get(id=1)
+Out[97]: <Author: Author object>
+
+In [98]: Author.objects.authors
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-98-21cb0e4101fa> in <module>()
+----> 1 Author.objects.authors
+
+AttributeError: 'Manager' object has no attribute 'authors'
+
+In [99]: Book.objects.authors
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-99-c5d45dcdf014> in <module>()
+----> 1 Book.objects.authors
+
+AttributeError: 'Manager' object has no attribute 'authors'
+
+In [100]: Book.objects.books
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-100-f073bfb48082> in <module>()
+----> 1 Book.objects.books
+
+AttributeError: 'Manager' object has no attribute 'books'
+
+In [101]: a=Author.objects.get(id=4)
+
+In [102]: b=Book.objects.get(id=4)
+
+In [103]: a.get(b)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-103-84a2d3f7ff2f> in <module>()
+----> 1 a.get(b)
+
+AttributeError: 'Author' object has no attribute 'get'
+
+In [104]: a.objects.get(b)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-104-4bfdb0eed308> in <module>()
+----> 1 a.objects.get(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in __get__(self, instance, cls)
+    184     def __get__(self, instance, cls=None):
+    185         if instance is not None:
+--> 186             raise AttributeError("Manager isn't accessible via %s instances" % cls.__name__)
+    187 
+    188         if cls._meta.abstract:
+
+AttributeError: Manager isn't accessible via Author instances
+
+In [105]: a(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-105-60e14eee1394> in <module>()
+----> 1 a(b)
+
+TypeError: 'Author' object is not callable
+
+In [106]: a.books.get(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-106-00d0e6b527d8> in <module>()
+----> 1 a.books.get(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Book' object is not iterable
+
+In [107]: a.books.filter(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-107-df42edb4b0e8> in <module>()
+----> 1 a.books.filter(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Book' object is not iterable
+
+In [108]: b.authors
+Out[108]: <django.db.models.fields.related_descriptors.ManyRelatedManager at 0x112025f10>
+
+In [109]: b.authors.get(a)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-109-9c30e354881d> in <module>()
+----> 1 b.authors.get(a)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Author' object is not iterable
+
+In [110]: b.authors.get(id)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-110-c557b057ea1f> in <module>()
+----> 1 b.authors.get(id)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'builtin_function_or_method' object is not iterable
+
+In [111]: a=Author.objects.get(id=3)
+
+In [112]: a=Book.objects.get(id=3)
+
+In [113]: a.authors.all
+Out[113]: <bound method ManyRelatedManager.all of <django.db.models.fields.related_descriptors.ManyRelatedManager object at 0x112030390>>
+
+In [114]: a.authors.all()
+Out[114]: <QuerySet [<Author: Author object>, <Author: Author object>, <Author: Author object>]>
+
+In [115]: a.authors.remove(id=1)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-115-5a0409497d34> in <module>()
+----> 1 a.authors.remove(id=1)
+
+TypeError: remove() got an unexpected keyword argument 'id'
+
+In [116]: a.author(id=1).remove()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-116-ad71201f9b97> in <module>()
+----> 1 a.author(id=1).remove()
+
+AttributeError: 'Book' object has no attribute 'author'
+
+In [117]: a.authors(id=1).remove()
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-117-bda597304a0a> in <module>()
+----> 1 a.authors(id=1).remove()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in __call__(self, **kwargs)
+    793             # We use **kwargs rather than a kwarg argument to enforce the
+    794             # `manager='manager_name'` syntax.
+--> 795             manager = getattr(self.model, kwargs.pop('manager'))
+    796             manager_class = create_forward_many_to_many_manager(manager.__class__, rel, reverse)
+    797             return manager_class(instance=self.instance)
+
+KeyError: u'manager'
+
+In [118]: b=a.get(id=1)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-118-998b3f8d6b8d> in <module>()
+----> 1 b=a.get(id=1)
+
+AttributeError: 'Book' object has no attribute 'get'
+
+In [119]: a=Book.objects.get(id=3)
+
+In [120]: a.authors(id=1)
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-120-ab15ed292efc> in <module>()
+----> 1 a.authors(id=1)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in __call__(self, **kwargs)
+    793             # We use **kwargs rather than a kwarg argument to enforce the
+    794             # `manager='manager_name'` syntax.
+--> 795             manager = getattr(self.model, kwargs.pop('manager'))
+    796             manager_class = create_forward_many_to_many_manager(manager.__class__, rel, reverse)
+    797             return manager_class(instance=self.instance)
+
+KeyError: u'manager'
+
+In [121]: b=a.authors(id=1)
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-121-8708c3f5a7c0> in <module>()
+----> 1 b=a.authors(id=1)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.pyc in __call__(self, **kwargs)
+    793             # We use **kwargs rather than a kwarg argument to enforce the
+    794             # `manager='manager_name'` syntax.
+--> 795             manager = getattr(self.model, kwargs.pop('manager'))
+    796             manager_class = create_forward_many_to_many_manager(manager.__class__, rel, reverse)
+    797             return manager_class(instance=self.instance)
+
+KeyError: u'manager'
+
+In [122]: b=a.authors.get(id=1)
+---------------------------------------------------------------------------
+DoesNotExist                              Traceback (most recent call last)
+<ipython-input-122-56c7d0c626ce> in <module>()
+----> 1 b=a.authors.get(id=1)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    383             raise self.model.DoesNotExist(
+    384                 "%s matching query does not exist." %
+--> 385                 self.model._meta.object_name
+    386             )
+    387         raise self.model.MultipleObjectsReturned(
+
+DoesNotExist: Author matching query does not exist.
+
+In [123]: a.authors.get(id=1)
+---------------------------------------------------------------------------
+DoesNotExist                              Traceback (most recent call last)
+<ipython-input-123-d5483fcf5c93> in <module>()
+----> 1 a.authors.get(id=1)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    383             raise self.model.DoesNotExist(
+    384                 "%s matching query does not exist." %
+--> 385                 self.model._meta.object_name
+    386             )
+    387         raise self.model.MultipleObjectsReturned(
+
+DoesNotExist: Author matching query does not exist.
+
+In [124]: 
+
+In [124]: a.authors.get(id=1)
+---------------------------------------------------------------------------
+DoesNotExist                              Traceback (most recent call last)
+<ipython-input-124-d5483fcf5c93> in <module>()
+----> 1 a.authors.get(id=1)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    383             raise self.model.DoesNotExist(
+    384                 "%s matching query does not exist." %
+--> 385                 self.model._meta.object_name
+    386             )
+    387         raise self.model.MultipleObjectsReturned(
+
+DoesNotExist: Author matching query does not exist.
+
+In [125]: a.authors.get(id=3)
+Out[125]: <Author: Author object>
+
+In [126]: a.authors.get(id=2)
+Out[126]: <Author: Author object>
+
+In [127]: a.authors.get(id=2).remove()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-127-34ddde2d1e97> in <module>()
+----> 1 a.authors.get(id=2).remove()
+
+AttributeError: 'Author' object has no attribute 'remove'
+
+In [128]: b=a.authors.get(id=2)
+
+In [129]: a.remove(b)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-129-36e4d1d70846> in <module>()
+----> 1 a.remove(b)
+
+AttributeError: 'Book' object has no attribute 'remove'
+
+In [130]: a.delete(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-130-b234d63fc2fb> in <module>()
+----> 1 a.delete(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/base.pyc in delete(self, using, keep_parents)
+    955 
+    956         collector = Collector(using=using)
+--> 957         collector.collect([self], keep_parents=keep_parents)
+    958         return collector.delete()
+    959 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/deletion.pyc in collect(self, objs, source, nullable, collect_related, source_attr, reverse_dependency, keep_parents)
+    215                 if field.remote_field.on_delete == DO_NOTHING:
+    216                     continue
+--> 217                 batches = self.get_del_batches(new_objs, field)
+    218                 for batch in batches:
+    219                     sub_objs = self.related_objects(related, batch)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/deletion.pyc in get_del_batches(self, objs, field)
+    159         """
+    160         conn_batch_size = max(
+--> 161             connections[self.using].ops.bulk_batch_size([field.name], objs), 1)
+    162         if len(objs) > conn_batch_size:
+    163             return [objs[i:i + conn_batch_size]
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/utils.pyc in __getitem__(self, alias)
+    203 
+    204     def __getitem__(self, alias):
+--> 205         if hasattr(self._connections, alias):
+    206             return getattr(self._connections, alias)
+    207 
+
+TypeError: hasattr(): attribute name must be string
+
+In [131]: a=Book.objects.get(id=3)
+
+In [132]: b=a.authors.get(id=2)
+
+In [133]: a.remove(b)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-133-36e4d1d70846> in <module>()
+----> 1 a.remove(b)
+
+AttributeError: 'Book' object has no attribute 'remove'
+
+In [134]: a.books.remove(b)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-134-40526203aab7> in <module>()
+----> 1 a.books.remove(b)
+
+AttributeError: 'Book' object has no attribute 'books'
+
+In [135]: a.authors.remove(b)
+
+In [136]: a.save()
+
+In [137]: a.authors.add(b)
+
+In [138]: a.save()
+
+In [139]: a=Author.objects.get(id=3)
+
+In [140]: b=a.books.get(id=3)
+
+In [141]: a=Author.objects.get(id=2)
+
+In [142]: a.books.remove(b)
+
+In [143]: a.save()
+
+In [144]: b=Book.objects.get(id=2)
+
+In [145]: a=Author.objects.get(id=5)
+
+In [146]: a.books.add(b)
+
+In [147]: a.save()
+
+In [148]: a.books.filter(b)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-148-df42edb4b0e8> in <module>()
+----> 1 a.books.filter(b)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Book' object is not iterable
+
+In [149]: a.books.filter(id=3)
+Out[149]: <QuerySet []>
+
+In [150]: a.books.filter(author_id=3)
+---------------------------------------------------------------------------
+FieldError                                Traceback (most recent call last)
+<ipython-input-150-c1886594d2fd> in <module>()
+----> 1 a.books.filter(author_id=3)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+-> 1133         lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+   1134         if not allow_joins and len(parts) > 1:
+   1135             raise FieldError("Joined field references are not permitted in this query")
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in solve_lookup_type(self, lookup)
+   1017             if expression:
+   1018                 return expression_lookups, (), expression
+-> 1019         _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+   1020         field_parts = lookup_splitted[0:len(lookup_splitted) - len(lookup_parts)]
+   1021         if len(lookup_parts) == 0:
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in names_to_path(self, names, opts, allow_many, fail_on_missing)
+   1325                     available = sorted(field_names + list(self.annotation_select))
+   1326                     raise FieldError("Cannot resolve keyword %r into field. "
+-> 1327                                      "Choices are: %s" % (name, ", ".join(available)))
+   1328                 break
+   1329             # Check if we need any joins for concrete inheritance cases (the
+
+FieldError: Cannot resolve keyword 'author_id' into field. Choices are: authors, created_at, desc, id, name, updated_at
+
+In [151]: b.authors.filter(id=3)
+Out[151]: <QuerySet [<Author: Author object>]>
+
+In [152]: c=b.authors.filter(id=3)
+
+In [153]: c
+Out[153]: <QuerySet [<Author: Author object>]>
+
+In [154]: a.filter(c)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-154-5a3a82835651> in <module>()
+----> 1 a.filter(c)
+
+AttributeError: 'Author' object has no attribute 'filter'
+
+In [155]: a.objects.filter(c)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-155-488178a4e94e> in <module>()
+----> 1 a.objects.filter(c)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in __get__(self, instance, cls)
+    184     def __get__(self, instance, cls=None):
+    185         if instance is not None:
+--> 186             raise AttributeError("Manager isn't accessible via %s instances" % cls.__name__)
+    187 
+    188         if cls._meta.abstract:
+
+AttributeError: Manager isn't accessible via Author instances
+
+In [156]: a.books.filter(c)
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-156-c189284cca14> in <module>()
+----> 1 a.books.filter(c)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+ValueError: need more than 1 value to unpack
+
+In [157]: a=Author.objects.get(id=3)
+
+In [158]: b=Book.objects.get(a)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-158-bac993c513ab> in <module>()
+----> 1 b=Book.objects.get(a)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Author' object is not iterable
+
+In [159]: b=Book.objects.filter(a)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-159-d32b84b6581b> in <module>()
+----> 1 b=Book.objects.filter(a)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Author' object is not iterable
+
+In [160]: b=Book.objects.authors
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-160-2c7adc5648ec> in <module>()
+----> 1 b=Book.objects.authors
+
+AttributeError: 'Manager' object has no attribute 'authors'
+
+In [161]: b=Book.authors
+
+In [162]: b=Book.authors.get(id=3)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-162-88654db73cbd> in <module>()
+----> 1 b=Book.authors.get(id=3)
+
+AttributeError: 'ManyToManyDescriptor' object has no attribute 'get'
+
+In [163]: b=Book.authors.filter(id=3)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-163-c27f67d71df9> in <module>()
+----> 1 b=Book.authors.filter(id=3)
+
+AttributeError: 'ManyToManyDescriptor' object has no attribute 'filter'
+
+In [164]: b=Book.authors
+
+In [165]: b
+Out[165]: <django.db.models.fields.related_descriptors.ManyToManyDescriptor at 0x110d58d90>
+
+In [166]: b=Book.authors.all()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-166-d53a4c0b43a0> in <module>()
+----> 1 b=Book.authors.all()
+
+AttributeError: 'ManyToManyDescriptor' object has no attribute 'all'
+
+In [167]: b=Book.authors.objects
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-167-592a8b681e9d> in <module>()
+----> 1 b=Book.authors.objects
+
+AttributeError: 'ManyToManyDescriptor' object has no attribute 'objects'
+
+In [168]: b=Book.objects.authors
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-168-2c7adc5648ec> in <module>()
+----> 1 b=Book.objects.authors
+
+AttributeError: 'Manager' object has no attribute 'authors'
+
+In [169]: b=Book.objects.get(author)s
+  File "<ipython-input-169-e0bffcf5372e>", line 1
+    b=Book.objects.get(author)s
+                              ^
+SyntaxError: invalid syntax
+
+
+In [170]: b=Book.objects.get(authors)
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-170-4aac1a6c7e71> in <module>()
+----> 1 b=Book.objects.get(authors)
+
+NameError: name 'authors' is not defined
+
+In [171]: b=Book.objects.get(Book.authors)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-171-2c68903c8625> in <module>()
+----> 1 b=Book.objects.get(Book.authors)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'ManyToManyDescriptor' object is not iterable
+
+In [172]: b=Book.objects.get(a)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-172-bac993c513ab> in <module>()
+----> 1 b=Book.objects.get(a)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/manager.pyc in manager_method(self, *args, **kwargs)
+     83         def create_method(name, method):
+     84             def manager_method(self, *args, **kwargs):
+---> 85                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+     86             manager_method.__name__ = method.__name__
+     87             manager_method.__doc__ = method.__doc__
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in get(self, *args, **kwargs)
+    374         keyword arguments.
+    375         """
+--> 376         clone = self.filter(*args, **kwargs)
+    377         if self.query.can_filter() and not self.query.distinct_fields:
+    378             clone = clone.order_by()
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in filter(self, *args, **kwargs)
+    792         set.
+    793         """
+--> 794         return self._filter_or_exclude(False, *args, **kwargs)
+    795 
+    796     def exclude(self, *args, **kwargs):
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/query.pyc in _filter_or_exclude(self, negate, *args, **kwargs)
+    810             clone.query.add_q(~Q(*args, **kwargs))
+    811         else:
+--> 812             clone.query.add_q(Q(*args, **kwargs))
+    813         return clone
+    814 
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in add_q(self, q_object)
+   1225         existing_inner = set(
+   1226             (a for a in self.alias_map if self.alias_map[a].join_type == INNER))
+-> 1227         clause, _ = self._add_q(q_object, self.used_aliases)
+   1228         if clause:
+   1229             self.where.add(clause, AND)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in _add_q(self, q_object, used_aliases, branch_negated, current_negated, allow_joins, split_subq)
+   1251                     child, can_reuse=used_aliases, branch_negated=branch_negated,
+   1252                     current_negated=current_negated, connector=connector,
+-> 1253                     allow_joins=allow_joins, split_subq=split_subq,
+   1254                 )
+   1255                 joinpromoter.add_votes(needed_inner)
+
+/Users/tiffanipack/Desktop/DojoAssignments/Python/my_Environments/djangoEnv/lib/python2.7/site-packages/django/db/models/sql/query.pyc in build_filter(self, filter_expr, branch_negated, current_negated, can_reuse, connector, allow_joins, split_subq)
+   1128         if isinstance(filter_expr, dict):
+   1129             raise FieldError("Cannot parse keyword query as dict")
+-> 1130         arg, value = filter_expr
+   1131         if not arg:
+   1132             raise FieldError("Cannot parse keyword query %r" % arg)
+
+TypeError: 'Author' object is not iterable
+
+In [173]: a
+Out[173]: <Author: Author object>
+
+In [174]: 
